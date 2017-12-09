@@ -1,0 +1,12 @@
+services:
+  gywaorganizer.databasemanager:
+    class: GyWa\OrganizerBundle\DatabaseManager
+    arguments:
+      - "@database_connection"
+    public: true
+
+  gywaorganizer.filemanager:
+    class: GyWa\OrganizerBundle\FileManager
+    arguments:
+      - "@gywaorganizer.databasemanager"
+    public: true

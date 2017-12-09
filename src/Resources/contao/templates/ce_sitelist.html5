@@ -1,0 +1,28 @@
+<div class="<?php echo $this->class; ?> block">
+
+    <?php if ($this->headline): ?>
+        <<?php echo $this->hl; ?>><?php echo $this->headline; ?></<?php echo $this->hl; ?>>
+    <?php endif; ?>
+
+    <?php foreach ($this->arrProperties as $key => $value) {
+           if ($key == 'default') {
+                echo '<ul>';
+                foreach ($value as $page) {
+                    echo '<li class="' . $page['alias'] . '">{{link::' . $page['id'] . '}}</li>';
+                }
+                echo '</ul>';
+           } else {
+                echo '<h2>' . $key . '</h2>';
+                echo '<ul' . (!empty($value['cssClass']) ? 'class="' . $value['cssClass'] . '"' : '') . '>';
+                foreach ($value as $page) {
+                    if (is_array($page)) {
+                        echo '<li class="' . $page['alias'] . '">{{link::' . $page['id'] . '}}</li>';
+                    }
+                }
+                echo '</ul>';
+           }
+    }
+
+    ?>
+
+</div>
