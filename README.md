@@ -4,3 +4,5 @@ To install it, search for the project in the contao-manager since this is a Mana
 
 For the bundle to work, you need to have a folder called "daten" in the first level of your files-folder.
 This is the folder all the folders for the pages will be created in.
+
+Warning: Backup your files before using any of the functions provided by this plugin!
