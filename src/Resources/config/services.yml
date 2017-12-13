@@ -9,4 +9,5 @@ services:
     class: GyWa\OrganizerBundle\FileManager
     arguments:
       - "@gywaorganizer.databasemanager"
+      - "@monolog.logger"
     public: true
