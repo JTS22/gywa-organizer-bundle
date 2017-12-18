@@ -46,9 +46,9 @@ class FileManager
             if (!empty($oldFilePath) && file_exists($oldFilePath)) {
                 if ($oldFilePath != $newFilePath) {
                     $this->moveOrMergeFolders($oldFilePath, $newFilePath);
+                    $this->dbManager->syncFilesWithDatabase();
                 }
             }
-            $this->dbManager->syncFilesWithDatabase();
         } else {
             $this->dbManager->syncFilesWithDatabase();
             $newFilePath = $this->getFilePathUpToPageId($dc->activeRecord->id, $dc->activeRecord->alias);
@@ -57,13 +57,13 @@ class FileManager
             if (!empty($oldFilePath) && file_exists($oldFilePath)) {
                 if ($oldFilePath != $newFilePath) {
                     $this->moveOrMergeFolders($oldFilePath, $newFilePath);
+                    $this->dbManager->syncFilesWithDatabase();
                 }
             } else if (!$this->checkForFile($newFilePath)){
                 if (!mkdir($newFilePath, 0777, true)) {
                     throw new InternalServerErrorException('New folder could not be created in ' . $newFilePath . '!');
                 }
             }
-            $this->dbManager->syncFilesWithDatabase();
         }
 
 
@@ -279,8 +279,8 @@ class FileManager
         $filePath = $this->dbManager->getDBFilePathForAlias($dc->activeRecord->alias);
         if (!empty($filePath) && $this->checkForFile($filePath)) {
             $this->moveToTrash($filePath);
+            $this->dbManager->syncFilesWithDatabase();
         }
-        $this->dbManager->syncFilesWithDatabase();
     }
 
 }
