@@ -4,7 +4,7 @@
 	"homepage": "https://gy-waldstrasse.de",
 	"type": "contao-bundle",
 	"license": "MIT",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"require": {
 		"php": ">=7.0",
 		"contao/core-bundle": "^4.4"
