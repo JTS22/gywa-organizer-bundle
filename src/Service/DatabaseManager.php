@@ -3,7 +3,6 @@
 namespace GyWa\OrganizerBundle;
 
 use Contao\CoreBundle\Exception\InternalServerErrorException;
-use Contao\FilesModel;
 use Contao\PageModel;
 use Doctrine\DBAL\Connection;
 use Contao\Dbafs;

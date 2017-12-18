@@ -24,3 +24,5 @@ class Plugin implements BundlePluginInterface
         ];
     }
 }
+
+?>

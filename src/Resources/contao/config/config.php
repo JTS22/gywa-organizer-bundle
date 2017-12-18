@@ -1,7 +1,7 @@
 
 <?php
 
-$GLOBALS['TL_CTE']['gywa_ce_sitelist']['ce_sitelist'] = 'GyWa\FileOrganizerBundle\SiteList';
+$GLOBALS['TL_CTE']['gywa_ce_sitelist']['ce_sitelist'] = 'GyWa\OrganizerBundle\SiteList';
 
 $GLOBALS['BE_MOD']['content']['gywa_category'] = array(
         'tables' => ['tl_category'],

@@ -1,5 +1,5 @@
 <?php
-namespace GyWa\FileOrganizerBundle;
+namespace GyWa\OrganizerBundle;
 
 class SiteList extends \ContentElement
 {
