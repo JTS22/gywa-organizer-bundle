@@ -25,9 +25,6 @@ class SiteList extends \ContentElement
 
     private function genFeOutput()
     {
-
-        //$this->Template->headline = $this->headline;
-
         $page = $this->Database->prepare("SELECT * FROM tl_page WHERE id=(SELECT tl_article.pid FROM tl_article WHERE tl_article.id=(SELECT tl_content.pid FROM tl_content WHERE tl_content.id = ?))")
             ->limit(1)->execute($this->id);
 
@@ -43,7 +40,7 @@ class SiteList extends \ContentElement
                         if (!is_array($sortedPages[$category->title])) {
                             $sortedPages[$category->title] = array('css' => $category->cssClass);
                         }
-                        array_push($sortedPages[$category->title], array('title' => $subPages->title, 'id' => $subPages->id, 'alias' => $subPages->alias));
+                        array_push($sortedPages[$category->title], array('title' => $subPages->title, 'id' => $subPages->id, 'alias' => $subPages->alias, 'css' => $subPages->cssClass));
                     }
                 } else {
                     if (!is_array($sortedPages['default'])) {

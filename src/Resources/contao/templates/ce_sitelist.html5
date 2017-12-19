@@ -8,7 +8,7 @@
            if ($key == 'default') {
                 echo '<ul>';
                 foreach ($value as $page) {
-                    echo '<li class="' . $page['alias'] . '">{{link::' . $page['id'] . '}}</li>';
+                    echo '<li class="' . $page['alias'] . (!empty($page['css']) ? (' '.$page['css']) : '') . '">{{link::' . $page['id'] . '}}</li>';
                 }
                 echo '</ul>';
            } else {
@@ -16,7 +16,7 @@
                 echo '<ul' . (!empty($value['cssClass']) ? 'class="' . $value['cssClass'] . '"' : '') . '>';
                 foreach ($value as $page) {
                     if (is_array($page)) {
-                        echo '<li class="' . $page['alias'] . '">{{link::' . $page['id'] . '}}</li>';
+                        echo '<li class="' . $page['alias'] . (!empty($page['css']) ? (' '.$page['css']) : '') . '">{{link::' . $page['id'] . '}}</li>';
                     }
                 }
                 echo '</ul>';

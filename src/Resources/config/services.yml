@@ -3,6 +3,7 @@ services:
     class: GyWa\OrganizerBundle\DatabaseManager
     arguments:
       - "@database_connection"
+      - "@monolog.logger"
     public: true
 
   gywaorganizer.filemanager:
@@ -11,3 +12,5 @@ services:
       - "@gywaorganizer.databasemanager"
       - "@monolog.logger"
     public: true
+
+

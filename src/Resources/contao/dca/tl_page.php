@@ -1,6 +1,8 @@
 <?php
 
 
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
+
 array_push($GLOBALS['TL_DCA']['tl_page']['config']['onload_callback'], array('gywaorganizer.filemanager', 'organizeFiles'));
 array_push($GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback'], array('PageOrganizer', 'createFolderStructureForAlias'));
 array_push($GLOBALS['TL_DCA']['tl_page']['config']['ondelete_callback'], array('gywaorganizer.filemanager', 'removeFolderForAlias'));
@@ -15,18 +17,18 @@ $GLOBALS['TL_DCA']['tl_page']['fields']['category'] = array(
     'sql' => "int(10) unsigned NOT NULL default '0'"
 );
 
-function str_insert($str, $search, $insert) {
-    $index = strpos($str, $search);
-    if($index === false) {
-        return $str;
-    }
-    return substr_replace($str, $search.$insert, $index, strlen($search));
-}
-
-$GLOBALS['TL_DCA']['tl_page']['palettes']['default'] = str_insert($GLOBALS['TL_DCA']['tl_page']['palettes']['default'], 'type;', '{category_legend},category;');
-$GLOBALS['TL_DCA']['tl_page']['palettes']['regular'] = str_insert($GLOBALS['TL_DCA']['tl_page']['palettes']['regular'], 'type;', '{category_legend},category;');
-$GLOBALS['TL_DCA']['tl_page']['palettes']['forward'] = str_insert($GLOBALS['TL_DCA']['tl_page']['palettes']['forward'], 'type;', '{category_legend},category;');
-$GLOBALS['TL_DCA']['tl_page']['palettes']['redirect'] = str_insert($GLOBALS['TL_DCA']['tl_page']['palettes']['redirect'], 'type;', '{category_legend},category;');
+PaletteManipulator::create()->addLegend('category_legend', 'title_legend')
+    ->addField('category', 'category_legend', PaletteManipulator::POSITION_APPEND)
+    ->applyToPalette('default', 'tl_page');
+PaletteManipulator::create()->addLegend('category_legend', 'title_legend')
+    ->addField('category', 'category_legend', PaletteManipulator::POSITION_APPEND)
+    ->applyToPalette('regular', 'tl_page');
+PaletteManipulator::create()->addLegend('category_legend', 'title_legend')
+    ->addField('category', 'category_legend', PaletteManipulator::POSITION_APPEND)
+    ->applyToPalette('forward', 'tl_page');
+PaletteManipulator::create()->addLegend('category_legend', 'title_legend')
+    ->addField('category', 'category_legend', PaletteManipulator::POSITION_APPEND)
+    ->applyToPalette('redirect', 'tl_page');
 
 class PageOrganizer {
 

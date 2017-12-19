@@ -7,14 +7,17 @@ use Contao\PageModel;
 use Doctrine\DBAL\Connection;
 use Contao\Dbafs;
 use Contao\Database;
+use Psr\Log\LoggerInterface;
 
 class DatabaseManager
 {
     private $database;
+    private $logger;
 
-    public function __construct(Connection $connection)
+    public function __construct(Connection $connection, LoggerInterface $logger)
     {
         $this->database = $connection;
+        $this->logger = $logger;
     }
 
     public function syncFilesWithDatabase() {
@@ -47,12 +50,6 @@ class DatabaseManager
     public function getAliasForID($id) {
         $page = PageModel::findById($id);
         if (!empty($page)) return $page->alias;
-        else return false;
-    }
-
-    public function getDBFilePathForAlias($alias) {
-        $result = Database::getInstance()->prepare("SELECT `path` FROM tl_files WHERE `name`=? AND type = 'folder' AND `path` LIKE 'files/daten%'")->limit(1)->execute($alias);
-        if ($result->numRows > 0) return $result->path;
         else return false;
     }
 

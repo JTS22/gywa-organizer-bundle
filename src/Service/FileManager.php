@@ -37,11 +37,19 @@ class FileManager
         }
     }
 
+    private function getActualFilePathForAlias($alias) {
+        $result = glob(GyWaFileConfig::$rootFileDirectory . '{/**/' . $alias . ',/' . $alias . '}', GLOB_BRACE | GLOB_ONLYDIR | GLOB_NOSORT);
+        if ($result == false) return false;
+        else if (count($result) > 0) return $result[0];
+        else return false;
+
+    }
+
     public function createFolderStructureForAlias(DataContainer $dc, $oldAlias) {
         if (!empty($oldAlias) && $oldAlias != $dc->activeRecord->alias) {
-            $this->dbManager->syncFilesWithDatabase();
-            $newFilePath = $this->getFilePathUpToPageId($dc->activeRecord->id, $dc->activeRecord->alias);
-            $oldFilePath = $this->dbManager->getDBFilePathForAlias($oldAlias);
+            //$this->dbManager->syncFilesWithDatabase();
+            $newFilePath = $this->getIntendedFilePathUpToPageId($dc->activeRecord->id, $dc->activeRecord->alias);
+            $oldFilePath = $this->getActualFilePathForAlias($oldAlias);
 
             if (!empty($oldFilePath) && file_exists($oldFilePath)) {
                 if ($oldFilePath != $newFilePath) {
@@ -50,9 +58,11 @@ class FileManager
                 }
             }
         } else {
-            $this->dbManager->syncFilesWithDatabase();
-            $newFilePath = $this->getFilePathUpToPageId($dc->activeRecord->id, $dc->activeRecord->alias);
-            $oldFilePath = $this->dbManager->getDBFilePathForAlias($dc->activeRecord->alias);
+            //$this->dbManager->syncFilesWithDatabase();
+            $newFilePath = $this->getIntendedFilePathUpToPageId($dc->activeRecord->id, $dc->activeRecord->alias);
+            $oldFilePath = $this->getActualFilePathForAlias($dc->activeRecord->alias);
+
+            $this->logger->info('Path found for alias: ' . $oldFilePath);
 
             if (!empty($oldFilePath) && file_exists($oldFilePath)) {
                 if ($oldFilePath != $newFilePath) {
@@ -63,6 +73,7 @@ class FileManager
                 if (!mkdir($newFilePath, 0777, true)) {
                     throw new InternalServerErrorException('New folder could not be created in ' . $newFilePath . '!');
                 }
+                $this->dbManager->syncFilesWithDatabase();
             }
         }
 
@@ -90,8 +101,8 @@ class FileManager
                 $pages = $this->dbManager->selectAllRegularPages();
                 if ($pages->numRows > 0) {
                     do {
-                        $newFilePath = $this->getFilePathUpToPageId($pages->id, $pages->alias);
-                        $oldFilePath = $this->dbManager->getDBFilePathForAlias($pages->alias);
+                        $newFilePath = $this->getIntendedFilePathUpToPageId($pages->id, $pages->alias);
+                        $oldFilePath = $this->getActualFilePathForAlias($pages->alias);
 
                         $this->logger->info('Checking page ' . $pages->alias);
 
@@ -155,7 +166,7 @@ class FileManager
 
                 if ($pageID != false && $newParent != false && $mode != false) {
 
-                    $this->dbManager->syncFilesWithDatabase();
+                    //$this->dbManager->syncFilesWithDatabase();
 
                     if ($mode == 1) {
                         //Insert after newParent
@@ -189,9 +200,9 @@ class FileManager
     public function moveOrMergeFolders($oldPath, $newPath) {
         if ($this->checkForFile($newPath)) { //If already a folder exists in the new spot...
             $this->moveToTrash($newPath);
-        } else if (!$this->checkForFile(substr($newPath, 0, strripos($newPath, '/')))) {
-            if (!mkdir(substr($newPath, 0, strripos($newPath, '/')), 0777, true)) {
-                throw new InternalServerErrorException('New folder could not be created in ' . $newPath . '!');
+        } else if (!$this->checkForFile(dirname($newPath))) {
+            if (!mkdir(dirname($newPath), 0777, true)) {
+                throw new InternalServerErrorException('New folder could not be created in ' . dirname($newPath) . '!');
             }
         }
         if (!$this->files->rename($oldPath, $newPath)) {
@@ -216,8 +227,8 @@ class FileManager
         if ($oldpid != $newpid) {
             $newParentPage = $this->dbManager->getAliasForID($newpid);
 
-            $oldFilePath = $this->dbManager->getDBFilePathForAlias($pageToMove);
-            $newFilePath = $this->dbManager->getDBFilePathForAlias($newParentPage);
+            $oldFilePath = $this->getActualFilePathForAlias($pageToMove);
+            $newFilePath = $this->getActualFilePathForAlias($newParentPage);
 
             if (!empty($oldFilePath)) {
                 if ($this->checkForFile($oldFilePath)) { //If the old path exists
@@ -251,7 +262,7 @@ class FileManager
         return (!empty($path) && file_exists($path) && is_dir($path) && $this->files->is_writeable($path));
     }
 
-    public function getFilePathUpToPageId($id, $startAlias) {
+    public function getIntendedFilePathUpToPageId($id, $startAlias) {
         $path = '/' . $startAlias;
 
         while(!empty(($parent = $this->dbManager->requestParentPageForID($id))) && $parent->type != 'root') {
@@ -265,7 +276,7 @@ class FileManager
     }
 
     public function createFilePathUpToID($id, $alias) {
-        $path = $this->getFilePathUpToPageId($id, $alias);
+        $path = $this->getIntendedFilePathUpToPageId($id, $alias);
         if (!$this->checkForFile($path)) {
             if(!mkdir(strtolower($path), 0777, true)) {
                 throw new InternalServerErrorException('Directory ' . $path . ' cannot be accessed or created.');
@@ -275,8 +286,8 @@ class FileManager
     }
 
     public function removeFolderForAlias(DataContainer $dc) {
-        $this->dbManager->syncFilesWithDatabase();
-        $filePath = $this->dbManager->getDBFilePathForAlias($dc->activeRecord->alias);
+       // $this->dbManager->syncFilesWithDatabase();
+        $filePath = $this->getActualFilePathForAlias($dc->activeRecord->alias);
         if (!empty($filePath) && $this->checkForFile($filePath)) {
             $this->moveToTrash($filePath);
             $this->dbManager->syncFilesWithDatabase();
