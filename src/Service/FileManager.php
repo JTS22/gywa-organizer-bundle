@@ -2,12 +2,13 @@
 
 namespace GyWa\OrganizerBundle;
 
-use Contao\DataContainer;
-use Contao\CoreBundle\Exception\InternalServerErrorException;
 use Contao\Controller;
+use Contao\CoreBundle\Exception\InternalServerErrorException;
+use Contao\DataContainer;
 use Contao\Files;
 use Contao\Input;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Finder\Finder;
 
 class FileManager
 {
@@ -38,16 +39,18 @@ class FileManager
     }
 
     private function getActualFilePathForAlias($alias) {
-        $result = glob(GyWaFileConfig::$rootFileDirectory . '{/**/' . $alias . ',/' . $alias . '}', GLOB_BRACE | GLOB_ONLYDIR | GLOB_NOSORT);
-        if ($result == false) return false;
-        else if (count($result) > 0) return $result[0];
-        else return false;
-
+        $finder = new Finder();
+        $finder->in(GyWaFileConfig::$rootFileDirectory)->directories()->followLinks()->name($alias);
+        if ($finder->count() > 0) {
+            foreach ($finder as $dir) {
+                return $dir;
+            }
+        }
+        return false;
     }
 
     public function createFolderStructureForAlias(DataContainer $dc, $oldAlias) {
         if (!empty($oldAlias) && $oldAlias != $dc->activeRecord->alias) {
-            //$this->dbManager->syncFilesWithDatabase();
             $newFilePath = $this->getIntendedFilePathUpToPageId($dc->activeRecord->id, $dc->activeRecord->alias);
             $oldFilePath = $this->getActualFilePathForAlias($oldAlias);
 
@@ -58,7 +61,6 @@ class FileManager
                 }
             }
         } else {
-            //$this->dbManager->syncFilesWithDatabase();
             $newFilePath = $this->getIntendedFilePathUpToPageId($dc->activeRecord->id, $dc->activeRecord->alias);
             $oldFilePath = $this->getActualFilePathForAlias($dc->activeRecord->alias);
 
@@ -166,7 +168,6 @@ class FileManager
 
                 if ($pageID != false && $newParent != false && $mode != false) {
 
-                    //$this->dbManager->syncFilesWithDatabase();
 
                     if ($mode == 1) {
                         //Insert after newParent
@@ -215,7 +216,7 @@ class FileManager
 
         $this->logger->info('Moving ' . $path . ' to trash path ' . $trashPath);
 
-        if (!$this->files->rename($path, $trashPath)) {
+        if (!mkdir($trashPath, 0777, true) || !$this->files->rename($path, $trashPath)) {
             throw new InternalServerErrorException('Occupying folder in ' . $path . ' could not be moved to trash!');
         }
     }
@@ -286,7 +287,6 @@ class FileManager
     }
 
     public function removeFolderForAlias(DataContainer $dc) {
-       // $this->dbManager->syncFilesWithDatabase();
         $filePath = $this->getActualFilePathForAlias($dc->activeRecord->alias);
         if (!empty($filePath) && $this->checkForFile($filePath)) {
             $this->moveToTrash($filePath);
