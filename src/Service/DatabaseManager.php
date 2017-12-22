@@ -29,7 +29,7 @@ class DatabaseManager
     }
 
     public function checkForDistinctFileNames() {
-        $duplicateFolders = Database::getInstance()->prepare("select path from tl_files WHERE name in (select name from tl_files where type='folder' AND path LIKE 'files/daten/%' group by name having count(*) > 1) AND type='folder' AND path LIKE 'files/daten/%' ORDER BY name ASC")->execute();
+        $duplicateFolders = Database::getInstance()->prepare("select path from tl_files WHERE name in (select name from tl_files where type='folder' AND path LIKE 'files/daten/%' AND (SELECT COUNT(*) FROM tl_page WHERE alias=name) > 0 group by name having count(*) > 1) AND type='folder' AND path LIKE 'files/daten/%' ORDER BY name ASC")->execute();
         return $duplicateFolders;
     }
 
