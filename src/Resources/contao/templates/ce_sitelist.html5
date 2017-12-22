@@ -16,7 +16,7 @@
                 echo '<ul' . (!empty($value['cssClass']) ? 'class="' . $value['cssClass'] . '"' : '') . '>';
                 foreach ($value as $page) {
                     if (is_array($page)) {
-                        echo '<li class="' . $page['alias'] . (!empty($page['css']) ? (' '.$page['css']) : '') . '">{{link::' . $page['id'] . '}}</li>';
+                        echo '<li class="' . $page['alias'] . (!empty($page['css']) ? (' '.$page['css']) : '') . '"><h3>{{link::' . $page['id'] . '}}</h3></li>';
                     }
                 }
                 echo '</ul>';
