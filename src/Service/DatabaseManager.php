@@ -41,6 +41,10 @@ class DatabaseManager
         return Database::getInstance()->prepare("SELECT `id`, `alias`, `type` FROM tl_page WHERE id=(SELECT pid FROM tl_page WHERE id=?)")->limit(1)->execute($id);
     }
 
+    public function requestNewsArchiveDetailPage($newsID) {
+        return Database::getInstance()->prepare("SELECT tl_page.alias AS alias FROM tl_page WHERE id=(SELECT tl_news_archive.jumpTo FROM tl_news_archive WHERE id=(SELECT tl_news.pid FROM tl_news WHERE id=?))")->limit(1)->execute($newsID);
+    }
+
     public function requestPIDForID($id) {
         $result = PageModel::findByPk($id);
         if (!empty($result)) return $result->pid;

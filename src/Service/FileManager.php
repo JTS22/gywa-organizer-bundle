@@ -38,7 +38,7 @@ class FileManager
         }
     }
 
-    private function getActualFilePathForAlias($alias) {
+    public function getActualFilePathForAlias($alias) {
         $finder = new Finder();
         $finder->in(GyWaFileConfig::$rootFileDirectory)->directories()->followLinks()->name($alias);
         if ($finder->count() > 0) {

@@ -2,6 +2,7 @@
 
 namespace GyWa\OrganizerBundle\ContaoManager;
 
+use Contao\NewsBundle\ContaoNewsBundle;
 use GyWa\OrganizerBundle\GyWaOrganizerBundle;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
@@ -18,6 +19,7 @@ class Plugin implements BundlePluginInterface
             ->setLoadAfter(
                 [
                     ContaoCoreBundle::class,
+                    ContaoNewsBundle::class,
                     ContaoManagerBundle::class,
                 ]
             ),

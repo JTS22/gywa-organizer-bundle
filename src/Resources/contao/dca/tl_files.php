@@ -7,8 +7,25 @@ $GLOBALS['TL_DCA']['tl_files']['list']['global_operations']['adapt'] = array
     'class'               => 'header_adapt',
     'attributes'          => 'onclick="Backend.getScrollOffset()"'
 );
-array_push($GLOBALS['TL_DCA']['tl_files']['config']['onload_callback'], array('gywaorganizer.filemanager', 'adaptFilesToPageStructure'));
+array_push($GLOBALS['TL_DCA']['tl_files']['config']['onload_callback'], array('tl_files', 'adaptFilesToPageStructure'));
 array_push($GLOBALS['TL_DCA']['tl_files']['fields']['name']['save_callback'], array('gywaorganizer.filemanager', 'checkFileName'));
 
+
+class tl_files extends \Contao\System {
+
+    public function adaptFilesToPageStructure() {
+        $this->import('BackendUser', 'User');
+        if ($this->User->isAdmin) {
+            $fileManager = System::getContainer()->get('gywaorganizer.filemanager');
+            $fileManager->adaptFilesToPageStructure();
+        } else {
+            throw new \Contao\CoreBundle\Exception\AccessDeniedException("This action may only be used with administrator permissions!");
+        }
+
+
+    }
+
+
+}
 
 ?>

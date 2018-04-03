@@ -12,5 +12,10 @@ services:
       - "@gywaorganizer.databasemanager"
       - "@monolog.logger"
     public: true
+  gywaorganizer.newsfilemanager:
+    class: GyWa\OrganizerBundle\NewsFileManager
+    arguments:
+    - "@gywaorganizer.databasemanager"
+    - "@monolog.logger"
 
 
