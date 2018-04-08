@@ -1,7 +1,7 @@
 <?php
 
 array_push($GLOBALS['TL_DCA']['tl_news']['config']['onsubmit_callback'], array('NewsOrganizer', 'createFolderStructureForNews'));
-array_push($GLOBALS['TL_DCA']['tl_news']['config']['ondelete_callback'], array('gywaorganizer.filemanager', 'removeFolderForAlias'));
+array_push($GLOBALS['TL_DCA']['tl_news']['config']['ondelete_callback'], array('gywaorganizer.newsfilemanager', 'removeFolderForAlias'));
 array_push($GLOBALS['TL_DCA']['tl_news']['fields']['alias']['save_callback'], array('NewsOrganizer', 'checkPageAlias'));
 array_push($GLOBALS['TL_DCA']['tl_news']['fields']['date']['save_callback'], array('NewsOrganizer', 'saveOldDate'));
 
