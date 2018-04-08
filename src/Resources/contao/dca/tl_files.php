@@ -7,11 +7,11 @@ $GLOBALS['TL_DCA']['tl_files']['list']['global_operations']['adapt'] = array
     'class'               => 'header_adapt',
     'attributes'          => 'onclick="Backend.getScrollOffset()"'
 );
-array_push($GLOBALS['TL_DCA']['tl_files']['config']['onload_callback'], array('tl_files', 'adaptFilesToPageStructure'));
+array_push($GLOBALS['TL_DCA']['tl_files']['config']['onload_callback'], array('FileAdapter', 'adaptFilesToPageStructure'));
 array_push($GLOBALS['TL_DCA']['tl_files']['fields']['name']['save_callback'], array('gywaorganizer.filemanager', 'checkFileName'));
 
 
-class tl_files extends \Contao\System {
+class FileAdapter extends \Contao\System {
 
     public function adaptFilesToPageStructure() {
         $this->import('BackendUser', 'User');
