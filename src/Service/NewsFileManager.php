@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Jonas
- * Date: 18.03.2018
- * Time: 14:30
- */
+
 
 namespace GyWa\OrganizerBundle;
 
@@ -31,17 +26,18 @@ class NewsFileManager
         $this->fileManager = System::getContainer()->get('gywaorganizer.filemanager');
     }
 
-    private function getRootDirectory($detailPageAlias) {
-        if(!$this->fileManager->getActualFilePathForAlias($detailPageAlias)) {
-            throw new InternalServerErrorException('File path for news archive not found in the file system, please synchronize your page and file structure first!');
+    private function getRootDirectory(DataContainer $dc) {
+        $detailFilePath = $this->dbManager->requestNewsArchiveFolder($dc->activeRecord->pid);
+        if(empty($detailFilePath)) {
+            throw new InternalServerErrorException('No existing file path found linked to current news archive. Be sure to properly configure the file path in the archive\'s settings');
         }
-        return $this->fileManager->getActualFilePathForAlias($detailPageAlias);
+        return $detailFilePath;
     }
 
-    public function createFolderStructureForNews(DataContainer $dc, $oldAlias) {
-        if (!empty($oldAlias) && $oldAlias != $dc->activeRecord->alias) {
+    public function createFolderStructureForNews(DataContainer $dc, $oldAlias, $oldDate) {
+        if ((!empty($oldAlias) && $oldAlias != $dc->activeRecord->alias) || (!empty($oldDate) && $oldDate != $dc->activeRecord->date)) {
             $newFilePath = $this->getIntendedFilePathForNews($dc);
-            $oldFilePath = $this->getActualFilePathForNews($oldAlias, $dc->activeRecord->id);
+            $oldFilePath = $this->getActualFilePathForNews($dc, $oldAlias);
 
             if (!empty($oldFilePath) && file_exists($oldFilePath)) {
                 if ($oldFilePath != $newFilePath) {
@@ -51,9 +47,7 @@ class NewsFileManager
             }
         } else {
             $newFilePath = $this->getIntendedFilePathForNews($dc);
-            $oldFilePath = $this->getActualFilePathForNews($dc->activeRecord->alias, $dc->activeRecord->id);
-
-            $this->logger->info('Path found for alias: ' . $oldFilePath);
+            $oldFilePath = $this->getActualFilePathForNews($dc, $dc->activeRecord->alias);
 
             if (!empty($oldFilePath) && file_exists($oldFilePath)) {
                 if ($oldFilePath != $newFilePath) {
@@ -71,25 +65,16 @@ class NewsFileManager
 
     }
 
-    private function getDetailPageAlias($newsID) {
-        $detailPageAlias = $this->dbManager->requestNewsArchiveDetailPage($newsID);
-
-        if(empty($detailPageAlias) || $detailPageAlias->numRows == 0) {
-            throw new InternalServerErrorException('No archive page found for this news! Please set the reference page for the corresponding news archive first.');
-        }
-        return $detailPageAlias->alias;
-    }
-
-    public function getIntendedFilePathForNews($dc) {
-        $path = $this->getRootDirectory($this->getDetailPageAlias($dc->activeRecord->id));
+    public function getIntendedFilePathForNews(DataContainer $dc) {
+        $path = $this->getRootDirectory($dc);
         $path .= '/' . date('Y', $dc->activeRecord->date);
         $path .= '/' . date('m', $dc->activeRecord->date);
-        $path .= '/' . $dc->activeRecord->newsAlias;
+        $path .= '/' . $dc->activeRecord->alias;
 
         return $path;
     }
 
-    public function createFilePathForNews($dc) {
+    public function createFilePathForNews(DataContainer $dc) {
         $path = $this->getIntendedFilePathForNews($dc);
         if (!$this->fileManager->checkForFile($path)) {
             if(!mkdir(strtolower($path), 0777, true)) {
@@ -99,9 +84,9 @@ class NewsFileManager
         return $path;
     }
 
-    public function getActualFilePathForNews($alias, $newsID) {
+    public function getActualFilePathForNews(DataContainer $dc, $alias) {
         $finder = new Finder();
-        $finder->in($this->getRootDirectory($this->getDetailPageAlias($newsID)))->directories()->followLinks()->name($alias);
+        $finder->in($this->getRootDirectory($dc))->directories()->followLinks()->name($alias);
         if ($finder->count() > 0) {
             foreach ($finder as $dir) {
                 return $dir;
@@ -111,7 +96,7 @@ class NewsFileManager
     }
 
     public function removeFolderForAlias(DataContainer $dc) {
-        $filePath = $this->getActualFilePathForNews($dc->activeRecord->alias, $dc->activeRecord->id);
+        $filePath = $this->getActualFilePathForNews($dc, $dc->activeRecord->alias);
         if (!empty($filePath) && $this->fileManager->checkForFile($filePath)) {
             $this->fileManager->moveToTrash($filePath);
             $this->dbManager->syncFilesWithDatabase();
