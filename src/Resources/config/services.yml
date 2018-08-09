@@ -1,0 +1,21 @@
+services:
+  gywaorganizer.databasemanager:
+    class: GyWa\OrganizerBundle\DatabaseManager
+    arguments:
+      - "@database_connection"
+      - "@monolog.logger"
+    public: true
+
+  gywaorganizer.filemanager:
+    class: GyWa\OrganizerBundle\FileManager
+    arguments:
+      - "@gywaorganizer.databasemanager"
+      - "@monolog.logger"
+    public: true
+  gywaorganizer.newsfilemanager:
+    class: GyWa\OrganizerBundle\NewsFileManager
+    arguments:
+    - "@gywaorganizer.databasemanager"
+    - "@monolog.logger"
+
+

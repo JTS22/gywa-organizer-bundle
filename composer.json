@@ -1,0 +1,21 @@
+{
+	"name": "gywa/organizer-bundle",
+	"description": "Auto-organize the file's folder structure to match the page structure.",
+	"homepage": "https://gy-waldstrasse.de",
+	"type": "contao-bundle",
+	"license": "MIT",
+	"version": "2.0",
+	"require": {
+		"php": ">=7.0",
+		"contao/core-bundle": "^4.4",
+		"contao/news-bundle": "^4.4"
+	},
+	"autoload": {
+		"psr-4": {
+			"GyWa\\OrganizerBundle\\": "src"
+		}
+	},
+	"extra": {
+		"contao-manager-plugin": "GyWa\\OrganizerBundle\\ContaoManager\\Plugin"
+	}
+}
