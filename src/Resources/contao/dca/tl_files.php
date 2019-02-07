@@ -15,14 +15,12 @@ class FileAdapter extends \Contao\System {
 
     public function adaptFilesToPageStructure() {
         $this->import('BackendUser', 'User');
-        if ($this->User->isAdmin) {
+        if (\Input::get("key") == "adapt" && $this->User->isAdmin) {
             $fileManager = System::getContainer()->get('gywaorganizer.filemanager');
             $fileManager->adaptFilesToPageStructure();
         } else {
             throw new \Contao\CoreBundle\Exception\AccessDeniedException("This action may only be used with administrator permissions!");
         }
-
-
     }
 
 
